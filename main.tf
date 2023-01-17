@@ -120,7 +120,7 @@ resource "openstack_compute_instance_v2" "vm_double_pile" {
   name            = "vm_double_pile"
   image_id        = data.openstack_images_image_v2.cirros.id
   flavor_id       = data.openstack_compute_flavor_v2.tiny.id
-  key_pair        = var.key_name
+  key_pair        = "${openstack_compute_keypair_v2.mykey.name}"
   security_groups = ["default", "default_ipv6"]
   network {
     name = "${openstack_networking_network_v2.network_double_pile.name}"
@@ -132,7 +132,7 @@ resource "openstack_compute_instance_v2" "vm_dhcpstateless" {
   name            = "vm_dhcpstateless"
   image_id        = data.openstack_images_image_v2.cirros.id
   flavor_id       = data.openstack_compute_flavor_v2.tiny.id
-  key_pair        = var.key_name
+  key_pair        = "${openstack_compute_keypair_v2.mykey.name}"
   security_groups = ["default", "default_ipv6"]
   network {
     name = "${openstack_networking_network_v2.network_dhcpv6stateless.name}"
@@ -144,7 +144,7 @@ resource "openstack_compute_instance_v2" "vm_dhcpstateful" {
   name            = "vm_dhcpstateful"
   image_id        = data.openstack_images_image_v2.cirros.id
   flavor_id       = data.openstack_compute_flavor_v2.tiny.id
-  key_pair        = var.key_name
+  key_pair        = "${openstack_compute_keypair_v2.mykey.name}"
   security_groups = ["default", "default_ipv6"]
   network {
     name = "${openstack_networking_network_v2.network_dhcpv6stateful.name}"
@@ -223,7 +223,7 @@ resource "openstack_networking_trunk_v2" "network_trunk" {
 #`terraform import openstack_networking_floatingip_v2.floatingip_1 b34da7ac-2733-4c61-b402-11484869c82e`
 resource "openstack_networking_floatingip_v2" "floatingip_1" {
   pool = data.openstack_networking_network_v2.provider.name
-  address = "172.17.20.113"
+  address = "172.17.20.115"
   port_id = "${openstack_networking_port_v2.parentport_netstonks.id}"
 }
 
@@ -232,9 +232,14 @@ resource "openstack_compute_instance_v2" "vm_debian_trunk" {
   name            = "vm_debian_trunk"
   image_id        = data.openstack_images_image_v2.debian.id
   flavor_id       = data.openstack_compute_flavor_v2.small.id
-  key_pair        = var.key_name
+  key_pair        = "${openstack_compute_keypair_v2.mykey.name}"
   security_groups = ["default", "default_ipv6"]
   network {
     port = "${openstack_networking_port_v2.parentport_netstonks.id}"
   }
+}
+
+resource "openstack_compute_keypair_v2" "mykey" {
+  name = "mutliKey"
+  public_key = "add your public key here"
 }
