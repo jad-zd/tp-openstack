@@ -113,3 +113,40 @@ resource "openstack_networking_router_interface_v2" "router_interface_dhcpv6stat
   router_id = data.openstack_networking_router_v2.routerstonks.id
   subnet_id = "${openstack_networking_subnet_v2.subnet_dhcpv6stateful.id}"
 }
+
+# Les instances de test
+# On crée une instance cirros dans le réseau en double pile IPv4 et IPv6 SLAAC
+resource "openstack_compute_instance_v2" "vm_double_pile" {
+  name            = "vm_double_pile"
+  image_id        = data.openstack_images_image_v2.cirros.id
+  flavor_id       = data.openstack_compute_flavor_v2.tiny.id
+  key_pair        = var.key_name
+  security_groups = ["default", "default_ipv6"]
+  network {
+    name = "${openstack_networking_network_v2.network_double_pile.name}"
+  }
+}
+
+# On crée une instance cirros dans le réseau IPv6 DHCPv6 stateless
+resource "openstack_compute_instance_v2" "vm_dhcpstateless" {
+  name            = "vm_dhcpstateless"
+  image_id        = data.openstack_images_image_v2.cirros.id
+  flavor_id       = data.openstack_compute_flavor_v2.tiny.id
+  key_pair        = var.key_name
+  security_groups = ["default", "default_ipv6"]
+  network {
+    name = "${openstack_networking_network_v2.network_dhcpv6stateless.name}"
+  }
+}
+
+# On crée une instance cirros dans le réseau IPv6 DHCPv6 stateful
+resource "openstack_compute_instance_v2" "vm_dhcpstateful" {
+  name            = "vm_dhcpstateful"
+  image_id        = data.openstack_images_image_v2.cirros.id
+  flavor_id       = data.openstack_compute_flavor_v2.tiny.id
+  key_pair        = var.key_name
+  security_groups = ["default", "default_ipv6"]
+  network {
+    name = "${openstack_networking_network_v2.network_dhcpv6stateful.name}"
+  }
+}
