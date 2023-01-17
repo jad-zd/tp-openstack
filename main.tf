@@ -150,3 +150,71 @@ resource "openstack_compute_instance_v2" "vm_dhcpstateful" {
     name = "${openstack_networking_network_v2.network_dhcpv6stateful.name}"
   }
 }
+
+# Création d'un network trunk
+# On crée le port parent sur le réseau initial
+resource "openstack_networking_port_v2" "parentport_netstonks" {
+  depends_on = [
+    data.openstack_networking_subnet_v2.subnetstonks,
+  ]
+  name           = "parentport_netstonks"
+  network_id     = data.openstack_networking_network_v2.netstonks.id
+  mac_address    = "fa:16:3e:00:00:01"
+  admin_state_up = "true"
+}
+
+# On crée un sous-port sur le réseau de test initial
+resource "openstack_networking_port_v2" "subport_test_network" {
+  depends_on = [
+    data.openstack_networking_subnet_v2.test_subnet,
+  ]
+  name           = "subport_test_network"
+  network_id     = data.openstack_networking_network_v2.test_network.id
+  mac_address    = "fa:16:3e:00:00:01"
+  admin_state_up = "true"
+}
+
+# On crée un sous-port sur le réseau en double pile IPv4 et IPv6 SLAAC
+resource "openstack_networking_port_v2" "subport_network_double_pile" {
+  depends_on = [
+    resource.openstack_networking_subnet_v2.subnet_double_v4,
+    resource.openstack_networking_subnet_v2.subnet_double_v6_slaac,
+  ]
+  name           = "subport_network_double_pile"
+  network_id     = "${openstack_networking_network_v2.network_double_pile.id}"
+  mac_address    = "fa:16:3e:00:00:01"
+  admin_state_up = "true"
+}
+
+# On crée un sous-port sur le réseau IPv6 DHCPv6 stateful
+resource "openstack_networking_port_v2" "subport_network_dhcpv6stateless" {
+  depends_on = [
+    resource.openstack_networking_subnet_v2.subnet_dhcpv6stateless,
+  ]
+  name           = "subport_network_dhcpv6stateless"
+  network_id     = "${openstack_networking_network_v2.network_dhcpv6stateless.id}"
+  mac_address    = "fa:16:3e:00:00:01"
+  admin_state_up = "true"
+}
+
+# On crée le newtork trunk avec ce qui précède
+resource "openstack_networking_trunk_v2" "network_trunk" {
+  name           = "network_trunk"
+  admin_state_up = "true"
+  port_id        = "${openstack_networking_port_v2.parentport_netstonks.id}"
+  sub_port {
+    port_id           = "${openstack_networking_port_v2.subport_network_double_pile.id}"
+    segmentation_id   = 1
+    segmentation_type = "vlan"
+  }
+  sub_port {
+    port_id           = "${openstack_networking_port_v2.subport_test_network.id}"
+    segmentation_id   = 2
+    segmentation_type = "vlan"
+  }
+    sub_port {
+        port_id           = "${openstack_networking_port_v2.subport_network_dhcpv6stateless.id}"
+        segmentation_id   = 3
+        segmentation_type = "vlan"
+    }
+}
