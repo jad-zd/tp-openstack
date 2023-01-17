@@ -16,3 +16,8 @@ data "openstack_images_image_v2" "cirros" {
   name       = "cirros"
   visibility = "public"
 }
+
+# Import the available router from the OpenStack cloud
+data "openstack_networking_router_v2" "routerstonks" {
+	name = "routerstonks"
+}
