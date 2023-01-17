@@ -23,12 +23,12 @@ data "openstack_networking_router_v2" "routerstonks" {
 }
 
 # Import the net6stonks network from the OpenStack cloud
-data "openstack_networking_network_v2" "net6stonks" {
-  name = "net6stonks"
+data "openstack_networking_network_v2" "test_network" {
+  name = "test_network"
 }
 
-data "openstack_networking_subnet_v2" "subnet6stonks" {
-  name = "subnet6stonks"
+data "openstack_networking_subnet_v2" "test_subnet" {
+  name = "test_subnet"
 }
 
 # Import the initial network from the OpenStack cloud
