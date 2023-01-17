@@ -22,6 +22,11 @@ data "openstack_networking_router_v2" "routerstonks" {
 	name = "routerstonks"
 }
 
+# Import the external network from the OpenStack cloud
+data "openstack_networking_network_v2" "provider" {
+  name = "provider"
+}
+
 # Import the net6stonks network from the OpenStack cloud
 data "openstack_networking_network_v2" "test_network" {
   name = "test_network"

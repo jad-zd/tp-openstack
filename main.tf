@@ -218,3 +218,23 @@ resource "openstack_networking_trunk_v2" "network_trunk" {
         segmentation_type = "vlan"
     }
 }
+
+# Import this floating IP before with : 
+#`terraform import openstack_networking_floatingip_v2.floatingip_1 b34da7ac-2733-4c61-b402-11484869c82e`
+resource "openstack_networking_floatingip_v2" "floatingip_1" {
+  pool = data.openstack_networking_network_v2.provider.name
+  address = "172.17.20.113"
+  port_id = "${openstack_networking_port_v2.parentport_netstonks.id}"
+}
+
+
+resource "openstack_compute_instance_v2" "vm_debian_trunk" {
+  name            = "vm_debian_trunk"
+  image_id        = data.openstack_images_image_v2.debian.id
+  flavor_id       = data.openstack_compute_flavor_v2.small.id
+  key_pair        = var.key_name
+  security_groups = ["default", "default_ipv6"]
+  network {
+    port = "${openstack_networking_port_v2.parentport_netstonks.id}"
+  }
+}
