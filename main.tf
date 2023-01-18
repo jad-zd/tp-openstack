@@ -1,9 +1,11 @@
-# IPv6 default security group with ICMPv6 and SSH
+# Groupe de sécurité pour l'IPv6, permettant l'ICMPv6 et le SSH sur IPv6
+# On crée le groupe de sécurité
 resource "openstack_networking_secgroup_v2" "default_ipv6" {
   name        = "default_ipv6"
   description = "default security group for IPv6"  
 }
 
+# On crée la règle pour permettre l'ICMPv6
 resource "openstack_networking_secgroup_rule_v2" "rule_icmpv6" {
   description = "allow icmpv6"
   direction   = "ingress"
@@ -13,6 +15,7 @@ resource "openstack_networking_secgroup_rule_v2" "rule_icmpv6" {
   security_group_id = "${openstack_networking_secgroup_v2.default_ipv6.id}"
 }
 
+# On crée la règle pour permettre le SSH sur IPv6
 resource "openstack_networking_secgroup_rule_v2" "rule_ssh" {
   description = "allow ssh"
   direction   = "ingress"
@@ -220,7 +223,7 @@ resource "openstack_networking_trunk_v2" "network_trunk" {
 }
 
 # Import this floating IP before with : 
-#`terraform import openstack_networking_floatingip_v2.floatingip_1 b34da7ac-2733-4c61-b402-11484869c82e`
+#`terraform import openstack_networking_floatingip_v2.floatingip_1 <id of the floating ip>`
 resource "openstack_networking_floatingip_v2" "floatingip_1" {
   pool = data.openstack_networking_network_v2.provider.name
   address = "172.17.20.115"

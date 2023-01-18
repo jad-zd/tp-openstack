@@ -12,6 +12,7 @@ Le fichier `openrc.sh` de votre projet OpenStack
 ```
 .
 ├── data.tf       les ressources déjà existante à importer
+├── demo.tf       fichier pour la démo
 ├── main.tf       les ressources à créer
 ├── output.tf     les sorties
 ├── providers.tf  les providers utilisés (OpenStack, etc.)
@@ -30,6 +31,11 @@ Ensuite, vous devez sourcer le fichier `openrc.sh` de votre projet OpenStack:
 ```bash
 source path/to/<nom du projet>-openrc.sh
 ```
+Avant d'effectuer quoi que ce soit, il faut importer une ip floatante de OpenStack, puisqu'elle ne peuve pas être créée qu'avec le compte admin. Pour cela on utilise la commande `terraform import` :
+```bash
+terraform import openstack_networking_floatingip_v2.floatingip_1 <id of the floating ip>
+```
+
 Puis effectuer un plan:
 
 ```bash
